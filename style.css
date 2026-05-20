@@ -1,15 +1,28 @@
+html {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #0b0f19;
+}
+
 body {
+    min-height: 100%;
+    margin: 0;
     position: relative;
+    background-color: transparent;
+}
+
+#dashboard-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
     background-image: url('background.jpeg');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
     background-repeat: no-repeat;
-    z-index: 0;
+    z-index: -2;
 }
 
-body::before {
-    content: '';
+.dashboard-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(15, 23, 42, 0.45);
@@ -35,11 +48,10 @@ body::before {
 }
 
 .slide-shelf.open {
-    max-height: 220px;
+    max-height: 400px;
     opacity: 1;
 }
 
-/* Tip Button Glass Treatment */
 .tip-button {
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);

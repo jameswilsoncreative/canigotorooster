@@ -1,6 +1,5 @@
-// Target Endpoints (Rooster Rock Coordinates: 45.5492, -122.2341)
 const RIVER_API = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=14128870&parameterCd=00065&period=P1D&siteStatus=all";
-const WEATHER_API = "https://api.open-meteo.com/v1/forecast?latitude=45.5492&longitude=-122.2341&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,uv_index&temperature_unit=fahrenheit&wind_speed_unit=mph";
+const WEATHER_API = "https://api.open-meteo.com/v1/forecast?latitude=45.5492&longitude=-122.2341&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,uv_index,is_day&temperature_unit=fahrenheit&wind_speed_unit=mph";
 
 function interpretWeather(code) {
     if (code === 0) return { icon: "sun", text: "Clear Sky" };
@@ -61,7 +60,7 @@ async function updateDashboard() {
         card.classList.remove('animate-pulse');
 
         if (gageHeight < 13.0) {
-            card.className = "glass-card bg-emerald-500/[0.08] rounded-2xl p-6 mb-4 border border-emerald-500/20 text-center flex flex-col items-center justify-center min-h-[200px]";
+            card.className = "glass-card bg-emerald-500/[0.08] rounded-2xl p-6 mb-4 border border-emerald-500/20 text-center flex flex-col items-center justify-center min-h-[200px] lg:flex-grow lg:flex-1";
             iconContainer.className = "w-[72px] h-[72px] flex items-center justify-center mb-2 text-emerald-400";
             iconContainer.innerHTML = `<i data-lucide="sun" class="w-[72px] h-[72px]"></i>`;
             text.innerText = "Perfect Beach Day!"; 
@@ -70,7 +69,7 @@ async function updateDashboard() {
             document.getElementById('island-status').innerText = "Easy wade/walk access.";
             riverGo = true;
         } else if (gageHeight >= 13.0 && gageHeight < 17.5) {
-            card.className = "glass-card bg-amber-500/[0.08] rounded-2xl p-6 mb-4 border border-amber-500/20 text-center flex flex-col items-center justify-center min-h-[200px]";
+            card.className = "glass-card bg-amber-500/[0.08] rounded-2xl p-6 mb-4 border border-amber-500/20 text-center flex flex-col items-center justify-center min-h-[200px] lg:flex-grow lg:flex-1";
             iconContainer.className = "w-[72px] h-[72px] flex items-center justify-center mb-2 text-amber-400";
             iconContainer.innerHTML = `<i data-lucide="alert-circle" class="w-[72px] h-[72px]"></i>`;
             text.innerText = "Limited Beach Space"; 
@@ -79,7 +78,7 @@ async function updateDashboard() {
             document.getElementById('island-status').innerText = "Deep wade or short swim.";
             riverGo = false;
         } else {
-            card.className = "glass-card bg-rose-500/[0.08] rounded-2xl p-6 mb-4 border border-rose-500/20 text-center flex flex-col items-center justify-center min-h-[200px]";
+            card.className = "glass-card bg-rose-500/[0.08] rounded-2xl p-6 mb-4 border border-rose-500/20 text-center flex flex-col items-center justify-center min-h-[200px] lg:flex-grow lg:flex-1";
             iconContainer.className = "w-[72px] h-[72px] flex items-center justify-center mb-2 text-rose-400";
             iconContainer.innerHTML = `<i data-lucide="waves" class="w-[72px] h-[72px]"></i>`;
             text.innerText = "Beach is Submerged"; 
@@ -100,6 +99,16 @@ async function updateDashboard() {
         const data = await response.json();
         const current = data.current;
         
+        const isDay = current.is_day !== undefined ? current.is_day === 1 : (new Date().getHours() >= 6 && new Date().getHours() < 20);
+        const bgEl = document.getElementById('dashboard-bg');
+        if (bgEl) {
+            bgEl.style.backgroundImage = isDay ? "url('background.jpeg')" : "url('backgroundDark.jpeg')";
+        }
+        
+        const themeColor = isDay ? "#1e293b" : "#0b0f19";
+        document.documentElement.style.backgroundColor = themeColor;
+        document.body.style.backgroundColor = "transparent";
+        
         const weather = interpretWeather(current.weather_code);
         const windDir = getWindDirection(current.wind_direction_10m);
         const wCard = document.getElementById('weather-card');
@@ -112,21 +121,21 @@ async function updateDashboard() {
         wCard.classList.remove('animate-pulse');
         
         if (temperature >= 80 && isClear) {
-            wCard.className = "glass-card bg-emerald-500/[0.08] rounded-2xl p-6 mb-4 border border-emerald-500/20 text-center flex flex-col items-center justify-center min-h-[200px]";
+            wCard.className = "glass-card bg-emerald-500/[0.08] rounded-2xl p-6 mb-4 border border-emerald-500/20 text-center flex flex-col items-center justify-center min-h-[200px] lg:flex-grow lg:flex-1";
             wIconContainer.className = "w-[72px] h-[72px] flex items-center justify-center mb-2 text-emerald-400";
             wText.className = "text-sm font-semibold text-emerald-400";
             wText.innerText = `${weather.text} (Warm enough!)`;
             weatherGo = true;
         } 
         else if (temperature >= 73 && temperature < 80 && isClear) {
-            wCard.className = "glass-card bg-amber-500/[0.08] rounded-2xl p-6 mb-4 border border-amber-500/20 text-center flex flex-col items-center justify-center min-h-[200px]";
+            wCard.className = "glass-card bg-amber-500/[0.08] rounded-2xl p-6 mb-4 border border-amber-500/20 text-center flex flex-col items-center justify-center min-h-[200px] lg:flex-grow lg:flex-1";
             wIconContainer.className = "w-[72px] h-[72px] flex items-center justify-center mb-2 text-amber-400";
             wText.className = "text-sm font-semibold text-amber-400";
             wText.innerText = `${weather.text} (A bit brisk)`;
             weatherGo = false;
         } 
         else {
-            wCard.className = "glass-card bg-rose-500/[0.08] rounded-2xl p-6 mb-4 border border-rose-500/20 text-center flex flex-col items-center justify-center min-h-[200px]";
+            wCard.className = "glass-card bg-rose-500/[0.08] rounded-2xl p-6 mb-4 border border-rose-500/20 text-center flex flex-col items-center justify-center min-h-[200px] lg:flex-grow lg:flex-1";
             wIconContainer.className = "w-[72px] h-[72px] flex items-center justify-center mb-2 text-rose-400";
             wText.className = "text-sm font-semibold text-rose-400";
             wText.innerText = !isClear ? `${weather.text} (Inclement Weather)` : `${weather.text} (Bring a blanket)`;
@@ -151,7 +160,6 @@ async function updateDashboard() {
     evaluateMasterStatus();
 }
 
-// Collapsible Event System Handler
 document.addEventListener('DOMContentLoaded', () => {
     const weatherBtn = document.getElementById('toggle-more-conditions');
     const weatherShelf = document.getElementById('extended-weather-shelf');
@@ -174,7 +182,28 @@ document.addEventListener('DOMContentLoaded', () => {
         riverBtnText.innerText = isOpen ? "LESS CONDITIONS" : "MORE CONDITIONS";
         riverIcon.style.transform = isOpen ? "rotate(180deg)" : "rotate(0deg)";
     });
+
+    const parkBtn = document.getElementById('toggle-park-info');
+    const parkShelf = document.getElementById('extended-park-shelf');
+    const parkBtnText = document.getElementById('park-btn-text');
+    const parkIcon = document.getElementById('park-btn-icon');
+
+    parkBtn.addEventListener('click', () => {
+        const isOpen = parkShelf.classList.toggle('open');
+        parkBtnText.innerText = isOpen ? "LESS DETAILS" : "MORE DETAILS";
+        parkIcon.style.transform = isOpen ? "rotate(180deg)" : "rotate(0deg)";
+    });
 });
+
+const initHour = new Date().getHours();
+const isInitNight = initHour < 6 || initHour >= 20;
+const bgEl = document.getElementById('dashboard-bg');
+if (bgEl) {
+    bgEl.style.backgroundImage = isInitNight ? "url('backgroundDark.jpeg')" : "url('background.jpeg')";
+}
+const initColor = isInitNight ? "#0b0f19" : "#1e293b";
+document.documentElement.style.backgroundColor = initColor;
+document.body.style.backgroundColor = "transparent";
 
 updateDashboard();
 setInterval(updateDashboard, 15 * 60 * 1000);
