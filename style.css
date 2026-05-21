@@ -4,9 +4,10 @@ html {
     overflow-y: auto;
     overscroll-behavior-y: auto;
     background-color: #000;
-    background-image: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('background.jpeg');
+    background-image: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url("background.jpeg");
     background-size: cover;
     background-position: center;
+    background-attachment: fixed;
 }
 
 body {
@@ -16,32 +17,6 @@ body {
     position: relative;
     background-color: transparent;
     overscroll-behavior-y: auto;
-}
-
-#dashboard-bg {
-    position: fixed;
-    /* Force-bleed into iOS safe areas using negative offsets */
-    top: -10vh; 
-    left: -10vw;
-    width: 120vw;
-    height: 120vh;
-    /* Apply the darkening tint directly to the image container */
-    background-image: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('background.jpeg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: -2;
-}
-
-.dashboard-overlay {
-    position: fixed;
-    /* Match the bleed of the background container */
-    top: -10vh; 
-    left: -10vw;
-    width: 120vw;
-    height: 120vh;
-    background: rgba(15, 23, 42, 0.45);
-    z-index: -1;
 }
 
 .glass-card {

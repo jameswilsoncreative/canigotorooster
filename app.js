@@ -145,15 +145,11 @@ async function updateDashboard() {
             const current = data.current;
             const dailyHigh = Math.round(data.daily.temperature_2m_max[0]);
             const dailyLow = Math.round(data.daily.temperature_2m_min[0]);
-            
+
             const isDay = current.is_day !== undefined ? current.is_day === 1 : (new Date().getHours() >= 6 && new Date().getHours() < 20);
-            const bgEl = document.getElementById('dashboard-bg');
             const bgUrl = isDay ? "url('background.jpeg')" : "url('backgroundDark.jpeg')";
             const tint = "rgba(15, 23, 42, 0.45)";
 
-            if (bgEl) {
-                bgEl.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${bgUrl}`;
-            }
             document.documentElement.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${bgUrl}`;
             document.documentElement.style.backgroundSize = "cover";
             document.documentElement.style.backgroundPosition = "center";
@@ -269,12 +265,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const initHour = new Date().getHours();
 const isInitNight = initHour < 6 || initHour >= 20;
-const bgEl = document.getElementById('dashboard-bg');
 
-if (bgEl && isInitNight) {
+if (isInitNight) {
     const nightUrl = "url('backgroundDark.jpeg')";
     const tint = "rgba(15, 23, 42, 0.45)";
-    bgEl.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${nightUrl}`;
     document.documentElement.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${nightUrl}`;
 }
 
