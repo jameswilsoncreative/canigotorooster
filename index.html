@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rooster Radar</title>
+    <title>Can I Go To Rooster?</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
@@ -14,152 +15,158 @@
     <div id="dashboard-bg"></div>
     <div class="dashboard-overlay"></div>
 
-            <header class="w-full max-w-md text-center mb-4">
-                <h1 class="text-4xl font-semibold tracking-tight mb-2 text-white drop-shadow-md">
-                    Rooster Radar
-                </h1>
-                <p class="text-xs font-semibold text-indigo-300 uppercase tracking-widest drop-shadow-sm">
-                    Live Columbia River Conditions
-                </p>
-            </header>
+    <header class="w-full max-w-md md:max-w-2xl text-center mb-4">
+        <h1 class="text-4xl font-semibold tracking-tight mb-2 text-white drop-shadow-md">
+            Can I go to <br class="hidden md:block"> <span class="md:whitespace-nowrap">Rooster Rock Today</span>
+        </h1>
+        <p class="text-xs font-semibold text-indigo-300 uppercase tracking-widest drop-shadow-sm">
+            Live Columbia River Conditions
+        </p>
+    </header>
 
-            <div id="master-status-banner" class="w-full max-w-sm md:max-w-none md:w-[500px] mb-6 glass-card rounded-2xl px-6 py-4 border border-white/[0.08] text-center font-medium tracking-wide flex items-center justify-center gap-3 transition-all duration-500 text-gray-400">
-                <i data-lucide="refresh-cw" class="w-5 h-5 animate-spin"></i>
-                <span>Analyzing overall conditions...</span>
+    <div id="master-status-banner" class="w-full max-w-sm md:max-w-none md:w-[500px] mb-6 glass-card rounded-2xl px-6 py-4 border border-white/[0.08] text-center font-medium tracking-wide flex items-center justify-center gap-3 transition-all duration-500 text-gray-400">
+        <i data-lucide="refresh-cw" class="w-5 h-5 animate-spin"></i>
+        <span>Analyzing overall conditions...</span>
+    </div>
+
+    <main class="w-full max-w-sm md:max-w-none lg:max-w-6xl flex flex-col lg:flex-row items-center lg:items-start gap-6 justify-center">
+        
+        <section class="glass-card w-full max-w-sm md:max-w-none md:w-[500px] lg:w-0 lg:flex-1 lg:max-w-[360px] rounded-3xl p-6 border border-white/[0.08] flex flex-col">
+            <h2 class="text-[11px] font-bold text-gray-300 uppercase tracking-wider mb-4 text-left">Water Level</h2>
+            <div id="status-card" class="glass-card rounded-2xl p-6 mb-4 border border-white/[0.08] text-center animate-pulse flex flex-col items-center justify-between">
+                <div id="status-icon-container" class="w-[72px] h-[72px] flex items-center justify-center mt-auto mb-2 text-gray-400">
+                    <i data-lucide="waves" class="w-[72px] h-[72px]"></i>
+                </div>
+                <h3 id="status-text" class="text-sm font-medium text-gray-200">Decent Mainland Access</h3>
+                <p id="gauge-reading" class="text-5xl font-light mt-2 mb-auto text-white tracking-tight">-- ft</p>
+            </div>
+            
+            <div class="text-left bg-black/20 rounded-xl p-4 text-sm text-gray-200 border border-white/[0.04]">
+                <div class="space-y-2 pb-1">
+                    <p><strong class="text-white/60 font-medium">Trails:</strong> <span id="trail-status">Checking...</span></p>
+                    <p><strong class="text-white/60 font-medium">Island:</strong> <span id="island-status">Checking...</span></p>
+                </div>
+                
+                <button id="toggle-river-conditions" class="w-full pt-2 border-t border-white/[0.06] text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center justify-between transition-colors focus:outline-none">
+                    <span id="river-btn-text">MORE CONDITIONS</span>
+                    <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-500" id="river-btn-icon"></i>
+                </button>
+
+                <div id="extended-river-shelf" class="slide-shelf">
+                    <div class="pt-3 space-y-2">
+                        <p><strong class="text-white/60 font-medium">24h Trend:</strong> <span id="river-trend">Calculating...</span></p>
+                        <p><strong class="text-white/60 font-medium">Historical Median:</strong> <span id="river-median">21.41 ft</span></p>
+                        <p><strong class="text-white/60 font-medium">Access Note:</strong> <span id="river-access-note">Checking...</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card w-full max-w-sm md:max-w-none md:w-[500px] lg:w-0 lg:flex-1 lg:max-w-[360px] rounded-3xl p-6 border border-white/[0.08] flex flex-col">
+            <h2 class="text-[11px] font-bold text-gray-300 uppercase tracking-wider mb-4 text-left">Gorge Weather</h2>
+            <div id="weather-card" class="glass-card rounded-2xl p-6 mb-4 border border-white/[0.08] text-center animate-pulse flex flex-col items-center justify-between">
+                <div id="weather-icon-container" class="w-[72px] h-[72px] flex items-center justify-center mt-auto mb-2 text-gray-400">
+                    <i data-lucide="wind" class="w-[72px] h-[72px]"></i>
+                </div>
+                <h3 id="weather-text" class="text-sm font-medium text-gray-200 md:whitespace-nowrap">High Today Is</h3>
+                <p id="weather-reading" class="text-5xl font-light mt-2 mb-auto text-white tracking-tight">--°F</p>
+            </div>
+            
+            <div class="text-left bg-black/20 rounded-xl p-4 text-sm text-gray-200 border border-white/[0.04]">
+                <div class="space-y-2 pb-1">
+                    <p><strong class="text-white/60 font-medium">Current:</strong> <span id="weather-current">--°F</span></p>
+                    <p><strong class="text-white/60 font-medium">Wind:</strong> <span id="wind-full">Checking...</span></p>
+                </div>
+                
+                <button id="toggle-more-conditions" class="w-full pt-2 border-t border-white/[0.06] text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center justify-between transition-colors focus:outline-none">
+                    <span id="toggle-btn-text">MORE CONDITIONS</span>
+                    <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-500" id="toggle-btn-icon"></i>
+                </button>
+
+                <div id="extended-weather-shelf" class="slide-shelf">
+                    <div class="pt-3 space-y-2">
+                        <p><strong class="text-white/60 font-medium">Feels Like:</strong> <span id="weather-feels">--°F</span></p>
+                        <p><strong class="text-white/60 font-medium">Humidity:</strong> <span id="weather-humidity">--%</span></p>
+                        <p><strong class="text-white/60 font-medium">UV Index:</strong> <span id="weather-uv">--</span></p>
+                        <p><strong class="text-white/60 font-medium">Access Note:</strong> <span id="weather-access-note">Checking...</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card w-full max-w-sm md:max-w-none md:w-[500px] lg:w-0 lg:flex-1 lg:max-w-[360px] rounded-3xl p-6 border border-white/[0.08] flex flex-col">
+            <h2 class="text-[11px] font-bold text-gray-300 uppercase tracking-wider mb-4 text-left">Parking & Info</h2>
+            
+            <div id="parking-card" class="glass-card bg-indigo-500/[0.08] rounded-2xl p-6 mb-4 border border-indigo-500/20 text-center flex flex-col items-center justify-between">
+                <div id="parking-icon-container" class="w-[72px] h-[72px] flex items-center justify-center mt-auto mb-2 text-white">
+                    <i data-lucide="car" class="w-[72px] h-[72px]"></i>
+                </div>
+                <h3 id="parking-text" class="text-sm font-bold text-white mb-4">Parking Fees</h3>                        
+                <div class="grid grid-cols-2 gap-3 text-[11px] w-full text-left mt-2 mb-auto">
+                    <div class="bg-black/10 border border-white/[0.04] p-3 rounded-xl">
+                        <span class="text-gray-400 block mb-0.5 text-[9px] uppercase font-bold tracking-wider">Day-Use Fee</span>
+                        <strong class="text-white">$10.00 <span class="font-normal text-[10px] text-gray-400">/ car</span></strong>
+                    </div>
+                    <a href="https://store.oregonstateparks.org/" target="_blank" class="bg-black/10 border border-white/[0.04] p-3 rounded-xl block">
+                        <span class="text-gray-400 block mb-0.5 text-[9px] uppercase font-bold tracking-wider flex items-center gap-1">Annual Pass <i data-lucide="external-link" class="w-2.5 h-2.5 opacity-60"></i></span>
+                        <strong class="text-white">$60.00 <span class="font-normal text-[10px] text-gray-400">/ year</span></strong>
+                    </a>
+                </div>
             </div>
 
-            <main class="w-full max-w-sm md:max-w-none lg:max-w-6xl flex flex-col lg:flex-row items-center lg:items-start gap-6 justify-center">
+            <div class="text-left bg-black/20 rounded-xl p-4 text-xs text-gray-200 border border-white/[0.04]">
+                <div class="space-y-2 pb-1">
+                    <p class="leading-relaxed"><strong class="text-white/60 font-medium">Where to Park:</strong> East side of park, all the way at the end.</p>
+                </div>
                 
-                <section class="glass-card w-full max-w-sm md:max-w-none md:w-[500px] lg:w-0 lg:flex-1 lg:max-w-[360px] rounded-3xl p-6 border border-white/[0.08] flex flex-col">
-                    <h2 class="text-[11px] font-bold text-gray-300 uppercase tracking-wider mb-4 text-left">Water Level</h2>
-                    <div id="status-card" class="glass-card rounded-2xl p-6 mb-4 border border-white/[0.08] text-center animate-pulse flex flex-col items-center justify-center min-h-[200px] flex-1 lg:flex-grow">
-                        <div id="status-icon-container" class="w-[72px] h-[72px] flex items-center justify-center mb-2 text-gray-400">
-                            <i data-lucide="waves" class="w-[72px] h-[72px]"></i>
-                        </div>
-                        <h3 id="status-text" class="text-sm font-medium text-gray-200">Loading River Data...</h3>
-                        <p id="gauge-reading" class="text-5xl font-light mt-2 text-white tracking-tight">-- ft</p>
-                    </div>
-                    
-                    <div class="text-left bg-black/20 rounded-xl p-4 text-sm text-gray-200 border border-white/[0.04]">
-                        <div class="space-y-2 pb-1">
-                            <p><strong class="text-white/60 font-medium">Trails:</strong> <span id="trail-status">Checking...</span></p>
-                            <p><strong class="text-white/60 font-medium">Island:</strong> <span id="island-status">Checking...</span></p>
+                <button id="toggle-park-info" class="w-full pt-2 border-t border-white/[0.06] text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center justify-between transition-colors focus:outline-none">
+                    <span id="park-btn-text">MORE DETAILS</span>
+                    <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-500" id="park-btn-icon"></i>
+                </button>
+
+                <div id="extended-park-shelf" class="slide-shelf">
+                    <div class="pt-3 space-y-3">
+                        <div class="space-y-2 text-xs text-gray-300 leading-relaxed">
+                            <p><strong class="text-white/60 font-medium">Paying the Fee:</strong> Payable at the booth. If closed, use the automated card machine (credit cards only).</p>
+                            <p><strong class="text-white/60 font-medium">Clothing-optional Beach Access:</strong> Park on the far east of the parking lot and walk down the hill. If you want to go to sand island, take the beach trail. If you want the mainland "gay" beach section, take the lagoon trail.</p>
                         </div>
                         
-                        <button id="toggle-river-conditions" class="w-full pt-2 border-t border-white/[0.06] text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center justify-between transition-colors focus:outline-none">
-                            <span id="river-btn-text">MORE CONDITIONS</span>
-                            <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-500" id="river-btn-icon"></i>
-                        </button>
-
-                        <div id="extended-river-shelf" class="slide-shelf">
-                            <div class="pt-3 space-y-2">
-                                <p><strong class="text-white/60 font-medium">24h Trend:</strong> <span id="river-trend">Calculating...</span></p>
-                                <p><strong class="text-white/60 font-medium">Historical Median:</strong> <span id="river-median">21.41 ft</span></p>
+                        <div class="pt-3 border-t border-white/[0.06]">
+                            <h5 class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2">Websites & Resources</h5>
+                            <div class="flex flex-col gap-2">
+                                <a href="https://stateparks.oregon.gov/index.cfm?do=park.profile&parkId=126" target="_blank" class="flex items-center justify-between px-3 py-2 rounded-lg bg-indigo-500/[0.06] hover:bg-indigo-500/[0.12] border border-indigo-500/20 text-indigo-300 text-[11px] font-semibold transition-all">
+                                    <span class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Oregon State Parks Profile</span>
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>
+                                <a href="https://stateparks.oregon.gov/index.cfm?do=main.loadFile&load=_siteFiles%2Fpublications%2F%2FRoosterRockColor074305.pdf" target="_blank" class="flex items-center justify-between px-3 py-2 rounded-lg bg-emerald-500/[0.06] hover:bg-emerald-500/[0.12] border border-emerald-500/20 text-emerald-300 text-[11px] font-semibold transition-all">
+                                    <span class="flex items-center gap-2"><i data-lucide="map" class="w-3.5 h-3.5"></i> Official Trail Map (PDF)</span>
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>
+                                <a href="https://levels.wkcc.org/" target="_blank" class="flex items-center justify-between px-3 py-2 rounded-lg bg-blue-500/[0.06] hover:bg-blue-500/[0.12] border border-blue-500/20 text-blue-300 text-[11px] font-semibold transition-all">
+                                    <span class="flex items-center gap-2"><i data-lucide="activity" class="w-3.5 h-3.5"></i> WKCC River Levels</span>
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>
+                                <a href="https://waterdata.usgs.gov/monitoring-location/14128870/" target="_blank" class="flex items-center justify-between px-3 py-2 rounded-lg bg-cyan-500/[0.06] hover:bg-cyan-500/[0.12] border border-cyan-500/20 text-cyan-300 text-[11px] font-semibold transition-all">
+                                    <span class="flex items-center gap-2"><i data-lucide="waves" class="w-3.5 h-3.5"></i> USGS Warrendale Gage</span>
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
+            </div>
+        </section>
 
-                <section class="glass-card w-full max-w-sm md:max-w-none md:w-[500px] lg:w-0 lg:flex-1 lg:max-w-[360px] rounded-3xl p-6 border border-white/[0.08] flex flex-col">
-                    <h2 class="text-[11px] font-bold text-gray-300 uppercase tracking-wider mb-4 text-left">Gorge Weather</h2>
-                    <div id="weather-card" class="glass-card rounded-2xl p-6 mb-4 border border-white/[0.08] text-center animate-pulse flex flex-col items-center justify-center min-h-[200px] flex-1 lg:flex-grow">
-                        <div id="weather-icon-container" class="w-[72px] h-[72px] flex items-center justify-center mb-2 text-gray-400">
-                            <i data-lucide="wind" class="w-[72px] h-[72px]"></i>
-                        </div>
-                        <h3 id="weather-text" class="text-sm font-medium text-gray-200 md:whitespace-nowrap">Loading Weather...</h3>
-                        <p id="weather-reading" class="text-5xl font-light mt-2 text-white tracking-tight">--°F</p>
-                    </div>
-                    
-                    <div class="text-left bg-black/20 rounded-xl p-4 text-sm text-gray-200 border border-white/[0.04]">
-                        <div class="space-y-2 pb-1">
-                            <p><strong class="text-white/60 font-medium">Wind Speed:</strong> <span id="wind-speed">Checking...</span></p>
-                            <p><strong class="text-white/60 font-medium">Direction:</strong> <span id="wind-dir">Checking...</span></p>
-                        </div>
-                        
-                        <button id="toggle-more-conditions" class="w-full pt-2 border-t border-white/[0.06] text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center justify-between transition-colors focus:outline-none">
-                            <span id="toggle-btn-text">MORE CONDITIONS</span>
-                            <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-500" id="toggle-btn-icon"></i>
-                        </button>
+    </main>
 
-                        <div id="extended-weather-shelf" class="slide-shelf">
-                            <div class="pt-3 space-y-2">
-                                <p><strong class="text-white/60 font-medium">Feels Like:</strong> <span id="weather-feels">--°F</span></p>
-                                <p><strong class="text-white/60 font-medium">Humidity:</strong> <span id="weather-humidity">--%</span></p>
-                                <p><strong class="text-white/60 font-medium">UV Index:</strong> <span id="weather-uv">--</span></p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+    <a href="https://buy.stripe.com/6oU6oI1KB1lMfBs0hW1oI00" target="_blank" class="tip-button mt-8 px-5 py-2.5 rounded-full text-xs font-semibold text-white/80 border border-white/[0.08] flex items-center gap-2 transition-all duration-300 hover:text-white focus:outline-none">
+        <i data-lucide="coffee" class="w-4 h-4 text-amber-400"></i>
+        <span>Tip me a coffee 👉👈</span>
+    </a>
 
-                <section class="glass-card w-full max-w-sm md:max-w-none md:w-[500px] lg:w-0 lg:flex-1 lg:max-w-[360px] rounded-3xl p-6 border border-white/[0.08] flex flex-col">
-                    <h2 class="text-[11px] font-bold text-gray-300 uppercase tracking-wider mb-4 text-left">Parking & Info</h2>
-                    
-                    <div class="glass-card rounded-2xl p-6 mb-4 border border-white/[0.08] text-center flex flex-col items-center justify-center min-h-[200px] flex-1 lg:flex-grow">
-                        <div class="w-[72px] h-[72px] flex items-center justify-center mb-2 text-indigo-300">
-                            <i data-lucide="car" class="w-[72px] h-[72px]"></i>
-                        </div>
-                        <h3 class="text-sm font-semibold text-gray-200 mb-4">Parking Fees</h3>                        
-                        <div class="grid grid-cols-2 gap-3 text-[11px] w-full text-left">
-                            <div class="bg-black/10 border border-white/[0.04] p-3 rounded-xl">
-                                <span class="text-gray-400 block mb-0.5 text-[9px] uppercase font-bold tracking-wider">Day-Use Fee</span>
-                                <strong class="text-white">$5.00 <span class="font-normal text-[10px] text-gray-400">/ car</span></strong>
-                            </div>
-                            <a href="https://store.oregonstateparks.org/" target="_blank" class="bg-black/10 border border-white/[0.04] p-3 rounded-xl block">
-                                <span class="text-gray-400 block mb-0.5 text-[9px] uppercase font-bold tracking-wider flex items-center gap-1">Annual Pass <i data-lucide="external-link" class="w-2.5 h-2.5 opacity-60"></i></span>
-                                <strong class="text-white">$30.00 <span class="font-normal text-[10px] text-gray-400">/ year</span></strong>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="text-left bg-black/20 rounded-xl p-4 text-xs text-gray-200 border border-white/[0.04]">
-                        <div class="space-y-2 pb-1">
-                            <p class="leading-relaxed"><strong class="text-white/60 font-medium">Clothing-Optional Beach:</strong> East side of park, fully separate and shielded from clothing-required areas.</p>
-                        </div>
-                        
-                        <button id="toggle-park-info" class="w-full pt-2 border-t border-white/[0.06] text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center justify-between transition-colors focus:outline-none">
-                            <span id="park-btn-text">MORE DETAILS</span>
-                                <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-500" id="park-btn-icon"></i>
-                        </button>
-
-                        <div id="extended-park-shelf" class="slide-shelf">
-                            <div class="pt-3 space-y-3">
-                                <div class="space-y-2 text-xs text-gray-300 leading-relaxed">
-                                    <p><strong class="text-white/60 font-medium">Paying the Fee:</strong> Payable at the booth. If closed, use the automated card machine (credit cards only).</p>
-                                    <p><strong class="text-white/60 font-medium">Picnic Shelters:</strong> Shelters A, B, and C offer covers, water, and electricity. Areas D and E are rustic (no utilities/covers).</p>
-                                </div>
-                                
-                                <div class="pt-3 border-t border-white/[0.06]">
-                                    <h5 class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2">Websites & Resources</h5>
-                                    <div class="flex flex-col gap-2">
-                                        <a href="https://stateparks.oregon.gov/index.cfm?do=park.profile&parkId=126" target="_blank" class="flex items-center justify-between px-3 py-2 rounded-lg bg-indigo-500/[0.06] hover:bg-indigo-500/[0.12] border border-indigo-500/20 text-indigo-300 text-[11px] font-semibold transition-all">
-                                            <span class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Oregon State Parks Profile</span>
-                                            <i data-lucide="external-link" class="w-3 h-3"></i>
-                                        </a>
-                                        <a href="https://levels.wkcc.org/" target="_blank" class="flex items-center justify-between px-3 py-2 rounded-lg bg-blue-500/[0.06] hover:bg-blue-500/[0.12] border border-blue-500/20 text-blue-300 text-[11px] font-semibold transition-all">
-                                            <span class="flex items-center gap-2"><i data-lucide="activity" class="w-3.5 h-3.5"></i> WKCC River Levels</span>
-                                            <i data-lucide="external-link" class="w-3 h-3"></i>
-                                        </a>
-                                        <a href="https://waterdata.usgs.gov/monitoring-location/14128870/" target="_blank" class="flex items-center justify-between px-3 py-2 rounded-lg bg-cyan-500/[0.06] hover:bg-cyan-500/[0.12] border border-cyan-500/20 text-cyan-300 text-[11px] font-semibold transition-all">
-                                            <span class="flex items-center gap-2"><i data-lucide="waves" class="w-3.5 h-3.5"></i> USGS Warrendale Gage</span>
-                                            <i data-lucide="external-link" class="w-3 h-3"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-            </main>
-
-            <a href="https://buy.stripe.com/6oU6oI1KB1lMfBs0hW1oI00" target="_blank" class="tip-button mt-8 px-5 py-2.5 rounded-full text-xs font-semibold text-white/80 border border-white/[0.08] flex items-center gap-2 transition-all duration-300 hover:text-white focus:outline-none">
-                <i data-lucide="coffee" class="w-4 h-4 text-amber-400"></i>
-                <span>Buy me coffee</span>
-            </a>
-
-            <footer class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mt-4 bg-black/30 px-3 py-1 rounded-full border border-white/[0.04]">
-                Last updated: <span id="timestamp" class="text-gray-300">Never</span>
-            </footer>
+    <footer onclick="window.location.reload()" class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mt-4 bg-black/30 px-3 py-1 rounded-full border border-white/[0.04] cursor-pointer hover:bg-black/50 transition-colors">
+        Last updated: <span id="timestamp" class="text-gray-300">Never</span>
+    </footer>
 
     <script src="app.js"></script>
 </body>
