@@ -150,10 +150,8 @@ async function updateDashboard() {
             const bgUrl = isDay ? "url('background.jpeg')" : "url('backgroundDark.jpeg')";
             const tint = "rgba(15, 23, 42, 0.45)";
 
-            document.documentElement.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${bgUrl}`;
-            document.documentElement.style.backgroundSize = "cover";
-            document.documentElement.style.backgroundPosition = "center";
-            
+            if (bgEl) bgEl.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${bgUrl}`;
+
             const weather = interpretWeather(current.weather_code);
             const windDir = getWindDirection(current.wind_direction_10m);
             const wCard = document.getElementById('weather-card');
@@ -269,7 +267,7 @@ const isInitNight = initHour < 6 || initHour >= 20;
 if (isInitNight) {
     const nightUrl = "url('backgroundDark.jpeg')";
     const tint = "rgba(15, 23, 42, 0.45)";
-    document.documentElement.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${nightUrl}`;
+    if (bgEl) bgEl.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${nightUrl}`;
 }
 
 updateDashboard();
