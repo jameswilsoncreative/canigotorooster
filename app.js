@@ -152,7 +152,7 @@ async function updateDashboard() {
             const tint = "rgba(15, 23, 42, 0.45)";
 
             if (bgEl) {
-                bgEl.style.backgroundImage = bgUrl;
+                bgEl.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${bgUrl}`;
             }
             document.documentElement.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${bgUrl}`;
             document.documentElement.style.backgroundSize = "cover";
@@ -272,8 +272,10 @@ const isInitNight = initHour < 6 || initHour >= 20;
 const bgEl = document.getElementById('dashboard-bg');
 
 if (bgEl && isInitNight) {
-    bgEl.style.backgroundImage = "url('backgroundDark.jpeg')";
-    document.documentElement.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('backgroundDark.jpeg')`;
+    const nightUrl = "url('backgroundDark.jpeg')";
+    const tint = "rgba(15, 23, 42, 0.45)";
+    bgEl.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${nightUrl}`;
+    document.documentElement.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${nightUrl}`;
 }
 
 updateDashboard();
