@@ -14,25 +14,28 @@ body {
 
 #dashboard-bg {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    /* Overfill by 5% on all sides to prevent seams during mobile UI transitions */
+    top: -5%; left: -5%; 
+    width: 110%;
+    height: 110%;
     background-image: url('background.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    z-index: -3;
+    z-index: -2;
 }
 
 .dashboard-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(15, 23, 42, 0.45);
-    z-index: -2;
+    z-index: -1;
 }
 
 .glass-card {
     background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
