@@ -1,5 +1,6 @@
 const RIVER_API = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=14128870&parameterCd=00065&period=P1D&siteStatus=all";
 const WEATHER_API = "https://api.open-meteo.com/v1/forecast?latitude=45.5492&longitude=-122.2341&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,uv_index,is_day&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph";
+const bgEl = document.getElementById('dashboard-bg');
 
 function interpretWeather(code) {
     if (code === 0) return { icon: "sun", text: "Clear Sky" };
@@ -17,19 +18,32 @@ function getWindDirection(deg) {
     return directions[Math.round(deg / 45) % 8];
 }
 
-// 4-Tier State Tracker: 3: Elite, 2: Good, 1: Suboptimal, 0: Bad
-let riverStatus = 0;
-let weatherStatus = 0;
+// 4-Tier State Tracker: 3: Elite, 2: Good, 1: Suboptimal, 0: Bad, -1: Error/Inconclusive
+let riverStatus = -1;
+let weatherStatus = -1;
 
 function evaluateMasterStatus() {
     const banner = document.getElementById('master-status-banner');
     const statusLevel = Math.min(riverStatus, weatherStatus);
-    
+
     // Reset structural utility classes before styling states
     banner.className = "w-full max-w-sm md:max-w-none md:w-[500px] mb-6 glass-card rounded-2xl px-6 py-4 text-center font-semibold tracking-wide flex items-center justify-center gap-2 shadow-lg transition-all duration-500";
     banner.style.borderWidth = "1px";
+    banner.onclick = null; // Remove retry listener if data load is successful
 
-    if (statusLevel === 3) {
+    if (statusLevel === -1) {
+        // Inconclusive State (Gray #6B7280)
+        banner.style.backgroundColor = "rgba(107, 114, 128, 0.15)";
+        banner.style.borderColor = "rgba(107, 114, 128, 0.4)";
+        banner.style.color = "#9ca3af"; // Gray-400
+        banner.classList.add('cursor-pointer', 'hover:bg-white/5');
+        banner.onclick = () => {
+            banner.innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5 animate-spin"></i> <span>Retrying...</span>`;
+            if (window.lucide && typeof window.lucide.createIcons === 'function') lucide.createIcons();
+            updateDashboard();
+        };
+        banner.innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5"></i> <span>Data failed to load. Tap to retry</span>`;
+    } else if (statusLevel === 3) {
         // Tier 1: 🟢 Elite (Emerald Peak #0D7A5F)
         banner.style.backgroundColor = "rgba(13, 122, 95, 0.15)";
         banner.style.borderColor = "rgba(13, 122, 95, 0.4)";
@@ -134,7 +148,7 @@ async function updateDashboard() {
         } catch (e) {
             console.error("Failed to parse river telemetry:", e);
             document.getElementById('status-text').innerText = "River Data Error";
-            riverStatus = 0;
+            riverStatus = -1;
         }
     };
 
@@ -211,7 +225,7 @@ async function updateDashboard() {
         } catch (e) {
             console.error("Failed to parse weather data:", e);
             document.getElementById('weather-text').innerText = "Weather Data Error";
-            weatherStatus = 0;
+            weatherStatus = -1;
         }
     };
 
