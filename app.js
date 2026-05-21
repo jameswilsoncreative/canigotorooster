@@ -148,10 +148,14 @@ async function updateDashboard() {
             
             const isDay = current.is_day !== undefined ? current.is_day === 1 : (new Date().getHours() >= 6 && new Date().getHours() < 20);
             const bgEl = document.getElementById('dashboard-bg');
+            const bgUrl = isDay ? "url('background.jpeg')" : "url('backgroundDark.jpeg')";
             if (bgEl) {
-                bgEl.style.backgroundImage = isDay ? "url('background.jpeg')" : "url('backgroundDark.jpeg')";
+                bgEl.style.backgroundImage = bgUrl;
             }
-            
+            // Set root background to ensure iOS status bar area shows the photo
+            document.documentElement.style.backgroundImage = bgUrl;
+            document.documentElement.style.backgroundSize = "cover";
+            document.documentElement.style.backgroundPosition = "center";
             
             const weather = interpretWeather(current.weather_code);
             const windDir = getWindDirection(current.wind_direction_10m);
@@ -265,9 +269,13 @@ document.addEventListener('DOMContentLoaded', () => {
 const initHour = new Date().getHours();
 const isInitNight = initHour < 6 || initHour >= 20;
 const bgEl = document.getElementById('dashboard-bg');
+const initBgUrl = isInitNight ? "url('backgroundDark.jpeg')" : "url('background.jpeg')";
 if (bgEl) {
-    bgEl.style.backgroundImage = isInitNight ? "url('backgroundDark.jpeg')" : "url('background.jpeg')";
+    bgEl.style.backgroundImage = initBgUrl;
 }
+document.documentElement.style.backgroundImage = initBgUrl;
+document.documentElement.style.backgroundSize = "cover";
+document.documentElement.style.backgroundPosition = "center";
 
 updateDashboard();
 setInterval(updateDashboard, 15 * 60 * 1000);
