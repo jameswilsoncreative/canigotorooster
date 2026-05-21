@@ -149,11 +149,12 @@ async function updateDashboard() {
             const isDay = current.is_day !== undefined ? current.is_day === 1 : (new Date().getHours() >= 6 && new Date().getHours() < 20);
             const bgEl = document.getElementById('dashboard-bg');
             const bgUrl = isDay ? "url('background.jpeg')" : "url('backgroundDark.jpeg')";
+            const tint = "rgba(15, 23, 42, 0.45)";
+
             if (bgEl) {
                 bgEl.style.backgroundImage = bgUrl;
             }
-            // Set root background to ensure iOS status bar area shows the photo
-            document.documentElement.style.backgroundImage = bgUrl;
+            document.documentElement.style.backgroundImage = `linear-gradient(${tint}, ${tint}), ${bgUrl}`;
             document.documentElement.style.backgroundSize = "cover";
             document.documentElement.style.backgroundPosition = "center";
             
@@ -269,13 +270,11 @@ document.addEventListener('DOMContentLoaded', () => {
 const initHour = new Date().getHours();
 const isInitNight = initHour < 6 || initHour >= 20;
 const bgEl = document.getElementById('dashboard-bg');
-const initBgUrl = isInitNight ? "url('backgroundDark.jpeg')" : "url('background.jpeg')";
-if (bgEl) {
-    bgEl.style.backgroundImage = initBgUrl;
+
+if (bgEl && isInitNight) {
+    bgEl.style.backgroundImage = "url('backgroundDark.jpeg')";
+    document.documentElement.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('backgroundDark.jpeg')`;
 }
-document.documentElement.style.backgroundImage = initBgUrl;
-document.documentElement.style.backgroundSize = "cover";
-document.documentElement.style.backgroundPosition = "center";
 
 updateDashboard();
 setInterval(updateDashboard, 15 * 60 * 1000);
