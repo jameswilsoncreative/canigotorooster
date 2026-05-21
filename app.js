@@ -152,9 +152,6 @@ async function updateDashboard() {
                 bgEl.style.backgroundImage = isDay ? "url('background.jpeg')" : "url('backgroundDark.jpeg')";
             }
             
-            const themeColor = "#0b0f19"; // Neutral dark background to blend with mobile UI
-            document.documentElement.style.backgroundColor = themeColor;
-            document.body.style.backgroundColor = "transparent";
             
             const weather = interpretWeather(current.weather_code);
             const windDir = getWindDirection(current.wind_direction_10m);
@@ -271,9 +268,6 @@ const bgEl = document.getElementById('dashboard-bg');
 if (bgEl) {
     bgEl.style.backgroundImage = isInitNight ? "url('backgroundDark.jpeg')" : "url('background.jpeg')";
 }
-const initColor = "#0b0f19";
-document.documentElement.style.backgroundColor = initColor;
-document.body.style.backgroundColor = "transparent";
 
 updateDashboard();
 setInterval(updateDashboard, 15 * 60 * 1000);
